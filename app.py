@@ -1,13 +1,17 @@
-from flask import Flask, send_from_directory
+# Imagen base de Python
+FROM python:3.9
 
-app = Flask(__name__, static_folder=".")
+# Establecer el directorio de trabajo dentro del contenedor
+WORKDIR /app
 
-@app.route("/")
-def home():
-    return send_from_directory(".", "index.html")
+# Copiar archivos al contenedor
+COPY . .
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    print(f"Running on port {port}")
-    app.run(host="0.0.0.0", port=port)
+# Instalar dependencias
+RUN pip install -r requirements.txt
+
+# Exponer el puerto 5000
+EXPOSE 5000
+
+# Comando para ejecutar Flask con Gunicorn
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
